@@ -38,16 +38,16 @@ jobs:
         - name: 'Build and push image'
           if: steps.hadolint_test.outputs.OUTPUT==0
           run: |
-            docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/classifier_g${{ secrets.GROUPE }}:v1
-            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/classifier_g${{ secrets.GROUPE }}:v1
+            docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/groupe2:v1
+            docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/groupe2:v1
 
         # deploy to ACA
         - name: Build and deploy Container App
           uses: azure/container-apps-deploy-action@v0
           with:
-            containerAppName: classifier-g${{ secrets.GROUPE }}
+            containerAppName: groupe2
             resourceGroup: ${{ secrets.RESOURCE_GROUP }}
-            imageToDeploy: ${{ secrets.REGISTRY_LOGIN_SERVER }}/classifier_g${{ secrets.GROUPE }}:v1
+            imageToDeploy: ${{ secrets.REGISTRY_LOGIN_SERVER }}/groupe2:v1
         
         # updating ACA
         - name: Update ACA
@@ -55,7 +55,7 @@ jobs:
           with:
             inlineScript: |
               az containerapp update \
-                -n classifier-g${{ secrets.GROUPE }} \
+                -n groupe2 \
                 -g ${{ secrets.RESOURCE_GROUP }} \
                 --min-replicas 0 \
                 --max-replicas 10 \
@@ -63,7 +63,7 @@ jobs:
                 --scale-rule-type http \
                 --scale-rule-http-concurrency 10
               az containerapp ingress enable \
-                -n classifier-g${{ secrets.GROUPE }} \
+                -n groupe2 \
                 -g ${{ secrets.RESOURCE_GROUP }} \
                 --type external \
                 --allow-insecure \
